@@ -1,5 +1,6 @@
 // import statements for hardware
 import {Cpu} from "./hardware/Cpu";
+import {hardware} from "./hardware/hardware";
 
 
 /*
@@ -14,18 +15,15 @@ const CLOCK_INTERVAL= 500;               // This is in ms (milliseconds) so 1000
                                         // make it larger.
 
 
-export class System {
+export class System extends hardware {
 
     private _CPU : Cpu = null;
     
     public running: boolean = false;
 
-    constructor() {
-        
-        console.log("Hello TSIRAM!");
+    constructor(idNumber: number, name: String) {
 
-
-        this._CPU = new Cpu();
+        super(idNumber, name);
         
         /*
         Start the system (Analogous to pressing the power button and having voltages flow through the components)
@@ -34,19 +32,26 @@ export class System {
          */
 
         this.startSystem();
+    }
 
+    public log(message: String){
+        return super.log(message);
     }
 
     public startSystem(): boolean {
 
-        return true;
+        return super.startSystem();
     }
 
     public stopSystem(): boolean {
 
-        return false;
+        return super.stopSystem();
 
     }
 }
 
-let system: System = new System();
+let system: System = new System(0, "System");
+let cpu: Cpu = new Cpu(0, "CPU");
+
+(system.log(" Complete"));
+(cpu.log(" Complete"));
