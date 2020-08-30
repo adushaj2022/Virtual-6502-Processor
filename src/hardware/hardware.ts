@@ -4,7 +4,7 @@ export class hardware {
 
     idNumber : number; 
     name : String;
-    debug = true;
+    debug : boolean = true;
     time;
 
     constructor(idNumber : number, name : String){
