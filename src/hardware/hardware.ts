@@ -48,9 +48,8 @@ export class hardware {
 
 
 
-<<<<<<< HEAD
 }
-=======
+
 
 
     
@@ -60,4 +59,4 @@ export class hardware {
 
 
 }
->>>>>>> 67a8cca27a236805b8841912c7df35ebb255b935
+
