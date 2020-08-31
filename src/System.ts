@@ -16,6 +16,11 @@ const CLOCK_INTERVAL= 500;               // This is in ms (milliseconds) so 1000
 
 
 export class System extends hardware {
+<<<<<<< HEAD
+=======
+
+    private _CPU : Cpu = null;
+>>>>>>> 67a8cca27a236805b8841912c7df35ebb255b935
     
     public running: boolean = false;
 
@@ -32,7 +37,10 @@ export class System extends hardware {
         this.startSystem();
     }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 67a8cca27a236805b8841912c7df35ebb255b935
     public log(message: String){
         return super.log(message);
     }
@@ -45,6 +53,10 @@ export class System extends hardware {
     public stopSystem(): boolean {
 
         return super.stopSystem();
+<<<<<<< HEAD
+=======
+
+>>>>>>> 67a8cca27a236805b8841912c7df35ebb255b935
     }
 }
 
@@ -52,4 +64,8 @@ let system: System = new System(0, "System");
 let cpu: Cpu = new Cpu(0, "CPU");
 
 (system.log(" Complete"));
+<<<<<<< HEAD
 (cpu.log(" Complete"));
+=======
+(cpu.log(" Complete"));
+>>>>>>> 67a8cca27a236805b8841912c7df35ebb255b935

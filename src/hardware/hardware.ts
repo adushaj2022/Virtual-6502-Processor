@@ -48,4 +48,16 @@ export class hardware {
 
 
 
+<<<<<<< HEAD
 }
+=======
+
+
+    
+
+
+
+
+
+}
+>>>>>>> 67a8cca27a236805b8841912c7df35ebb255b935
