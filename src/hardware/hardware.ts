@@ -21,6 +21,7 @@ export class hardware {
             this.time = new Date().toLocaleString();
 
             if (message !== null){
+                
                 if(this.startSystem()){
 
             return console.log("[HW - " + this.name + " ID: " + this.idNumber + " - " + this.time +  "] : " + message);
