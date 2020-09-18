@@ -43,16 +43,7 @@ export class System extends hardware {
     }
 
     public startSystem(): boolean {
-        let clk : Clock = new Clock(0, "Clock");
-        let cpu: Cpu = new Cpu(0, "CPU");
-        let mem: Memory = new Memory(0, "RAM");
-        
-        cpu.log(" Complete");
-        mem.log(" Complete");
-        clk.log(" Complete");
-
-        clk.process_pulse(CLOCK_INTERVAL);
-        (mem.displayMemory(0x100000));
+ 
 
         return super.startSystem();
     }
@@ -63,5 +54,14 @@ export class System extends hardware {
 }
 
 let system: System = new System(0, "System");
+let clk : Clock = new Clock(0, "Clock");
+let cpu: Cpu = new Cpu(0, "CPU");
+let mem: Memory = new Memory(0, "RAM");
 
+cpu.log(" Complete");
+mem.log(" Complete");
+clk.log(" Complete");
+
+clk.process_pulse(CLOCK_INTERVAL);
+(mem.displayMemory(0x100000));
 
