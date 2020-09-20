@@ -43,25 +43,33 @@ export class System extends hardware {
     }
 
     public startSystem(): boolean {
- 
+        let mem: Memory = new Memory(0, "RAM");
+        mem.log("Complete");
+        mem.displayMemory(0x14); //test case to print array
+        mem.displayMemory(0x100000); //test case to get undefined value / error
+        
+        let cpu: Cpu = new Cpu(0, "CPU");
+        //cpu.debug = false //test case passed output - debugging is off for CPU
+        cpu.log("Complete");
 
-        return super.startSystem();
+        let clk : Clock = new Clock(0, "Clock");
+        clk.log("Complete");
+        clk.process_pulse(CLOCK_INTERVAL); //begin the clock
+
+
+        return this.debug;
     }
 
     public stopSystem(): boolean {
-        return super.stopSystem();
+        return this.debug = false;
     }
+
 }
 
 let system: System = new System(0, "System");
-let clk : Clock = new Clock(0, "Clock");
-let cpu: Cpu = new Cpu(0, "CPU");
-let mem: Memory = new Memory(0, "RAM");
 
-cpu.log(" Complete");
-mem.log(" Complete");
-clk.log(" Complete");
 
-clk.process_pulse(CLOCK_INTERVAL);
-(mem.displayMemory(0x100000));
+
+
+
 
