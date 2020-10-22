@@ -3,6 +3,7 @@ import {Cpu} from "./hardware/Cpu";
 import {hardware} from "./hardware/hardware";
 import { Memory } from "./hardware/Memory";
 import { Clock } from "./hardware/Clock";
+import { Mmu } from "./hardware/Mmu";
 
 
 
@@ -45,9 +46,10 @@ export class System extends hardware {
     public startSystem(): boolean {
         let mem: Memory = new Memory(0, "RAM");
         mem.log("Complete");
-        mem.displayMemory(0x14); //test case to print array
-        mem.displayMemory(0x100000); //test case to get undefined value / error
-        
+        //mem.displayMemory(0x14); //test case to print array
+       // mem.displayMemory(0x100000); //test case to get undefined value / error
+       mem.memoryDump(0x00, 0x0A); 
+
         let cpu: Cpu = new Cpu(0, "CPU");
         //cpu.debug = false //test case passed output - debugging is off for CPU
         cpu.log("Complete");
@@ -55,7 +57,6 @@ export class System extends hardware {
         let clk : Clock = new Clock(0, "Clock");
         clk.log("Complete");
         clk.process_pulse(CLOCK_INTERVAL); //begin the clock
-
 
         return this.debug;
     }
