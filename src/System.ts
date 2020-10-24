@@ -44,19 +44,33 @@ export class System extends hardware {
     }
 
     public startSystem(): boolean {
+        //---------Memory-----------------
         let mem: Memory = new Memory(0, "RAM");
-        mem.log("Complete");
-        //mem.displayMemory(0x14); //test case to print array
-       // mem.displayMemory(0x100000); //test case to get undefined value / error
-       mem.memoryDump(0x00, 0x0A); 
+        mem.log("Created - Addressable space : " + mem.totalAddressableSpace());
 
+        //---------CPU-----------------
         let cpu: Cpu = new Cpu(0, "CPU");
-        //cpu.debug = false //test case passed output - debugging is off for CPU
-        cpu.log("Complete");
+        cpu.log("Created");
 
+        //---------Clock-----------------
         let clk : Clock = new Clock(0, "Clock");
-        clk.log("Complete");
+        clk.log("Created");
         clk.process_pulse(CLOCK_INTERVAL); //begin the clock
+
+        //---------MMU-----------------
+        let mmu : Mmu = new Mmu(1, "MMU");
+        mmu.writeIntermediate(0x0000, 0xA9);
+        mmu.writeIntermediate(0x0001, 0x0D);
+        mmu.writeIntermediate(0x0002, 0xA9);
+        mmu.writeIntermediate(0x0003, 0x1D);
+        mmu.writeIntermediate(0x0004, 0xA9);
+        mmu.writeIntermediate(0x0005, 0x2D);
+        mmu.writeIntermediate(0x0006, 0xA9);
+        mmu.writeIntermediate(0x0007, 0x3F);
+        mmu.writeIntermediate(0x0008, 0xA9);
+        mmu.writeIntermediate(0x0009, 0xFF);
+        mmu.writeIntermediate(0x000A, 0x00);
+        mmu.memoryDump(0x0000, 0x000A);
 
         return this.debug;
     }

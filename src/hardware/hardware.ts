@@ -1,5 +1,3 @@
-import { memory } from "console";
-import { Memory } from "./Memory";
 
 export class hardware {
     
@@ -14,6 +12,7 @@ export class hardware {
     }
     
 
+    //log statement that all devices will use
     public log(message: String): void{
             this.time = new Date().toLocaleString();
             if (message !== null){
@@ -21,12 +20,18 @@ export class hardware {
                     return console.log("[HW - " + this.name + " ID: " + this.idNumber + " - " + this.time +  "] : " + message);
 
                 } 
-            else { return console.log("Debugging is off ::::" + "for " + this.name);}
+            else { return console.log("Debugging is off for: " + this.name);}
 
             }
     
     }
   
+    //method to turn decimal into hex, rather than typing to String and to Upper everytime
+    public toHex(decimal : number) : string {
+        return decimal.toString(16).toUpperCase();
+    }
+
+
     //toString(16).toUpperCase() will simply make num a hex number
     //padStart will add the necescary amount of 0s to satisfy our needed length
     public hexValue(num: number, len: number){
