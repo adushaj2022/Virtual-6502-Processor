@@ -5,7 +5,7 @@ import { Memory } from "./Memory";
 
 export class Mmu extends hardware {
 
-    ram : Memory = new Memory(0, "MMU");    //create an instance of memory
+    private ram : Memory = new Memory(0, "MMU");    //create an instance of memory
 
     private lob : number = 0x00;
     private hob : number = 0x00;
@@ -16,25 +16,27 @@ export class Mmu extends hardware {
 
 
     public isMemoryEmpty() : boolean {
-
+        return this.ram.isMemoryEmpty();        //check to see if memory is empty
     }
 
-    public writeIntermediate(address : number, data : number) {
+    public writeIntermediate(address : number, data : number) : void {
         this.ram.setMAR(address);
         this.ram.setMDR(data);
-        this.ram.write();
+        this.ram.write();                       //set the MAR and MDR, then we can write to Memory
     }
 
     //Helper / Util method for CPU to access -- As CPU cannot access Memory directly. 
-    public memoryDump(fromAddress: number, toAddress: number){
+    public memoryDump(fromAddress: number, toAddress: number) : void {
         return this.ram.memoryDump(fromAddress, toAddress);
     }
 
     //Helper / Util method
     public setMAR(mar : number, martwo?: number) : void {        // this method will accept one paramter or two (method overloading)
-        if(typeof mar === 'number' && typeof martwo === undefined){
+        if(typeof mar === 'number' && typeof martwo === 'undefined'){
             return this.ram.setMAR(mar);                        //in this case, it will accept a one 4 digit hex number and set it
         } else if (typeof mar === 'number' && typeof martwo === 'number'){
+            this.setLowOrderByte(mar);      //set the bytes
+            this.setHighOrderByte(martwo);   //set the bytes so we can convert on the next line
             return this.ram.setMAR(this.convert_to_li_format());   //in this case it will accept two two digit hex numbers and convert them then set the converted number
         }
     }
@@ -65,42 +67,35 @@ export class Mmu extends hardware {
     }
 
     public reset() : void {
-        this.ram.reset();
+        this.ram.reset();               //reset all of memory with 0s, inclduing MDR and MAR
     }
 
     public setLowOrderByte(lob : number) : void {
-        this.lob = lob;
+        this.lob = lob;                 //setter for low order byte
     }
 
     public setHighOrderByte(hob : number) : void {
-        this.hob = hob;
+        this.hob = hob;                  //setter for high order byte
     }
 
     public getLowOrderByte() : number {
-        return this.lob;
+        return this.lob;                 //getter for low order byte
     }
 
     public getHighOrderByte() : number {
-        return this.hob;
+        return this.hob;                  //getter for high order byte
     }
 
     public convert_to_li_format() : number {
 
-        let a = this.getHighOrderByte();   //these getters will be used alot, so lets use a short variable name
-        let b = this.getHighOrderByte();
+       let a : number = this.getLowOrderByte();  //get LOB
+       let b : number = this.getHighOrderByte(); //get HOB
 
-        assert ((b.toString(16).length == 2) && (a.toString(16).length == 2));
+       b = (b << 8);                    //shift HOB two places left
+       b += a;                          //add LOB --> final answer
 
-        
-        let temp : string = (a > b) ? this.ram.hexValue(b, 4) : this.ram.hexValue(a, 4); //find bigger string
+       return b;                        
 
-        if(a > b){
-            temp = a.toString(16).toUpperCase() + temp.substring(2, 4);             //add the two together, substring is replacing leading 0s with the hob
-        } else {
-            temp = b.toString(16).toUpperCase() + temp.substring(2, 4);
-        }
-
-        return parseInt(temp, 16);    //return parsed int
     }
 
 

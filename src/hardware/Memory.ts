@@ -59,15 +59,15 @@ export class Memory extends hardware implements ClockListener {
     //fill array with 0s
     //shortcut could have been this.HexArray.fill(0x00);
     public fillArray(): void {
-        for (let i=0x00; i < this.HexArray.length; i++){ 
+        for (let i=0x00; i < this.HexArray.length; ++i){ 
             this.HexArray[i] = 0x00;
         }
     }
 
-    //method to check if array has anything besides 0s
+    //method to check if array has anything besides 0s (is it empty or not)
     public isMemoryEmpty() : boolean {
         for(let i = 0x00; i < this.HexArray.length; ++i){
-            if(this.HexArray[i] != 0){
+            if(this.HexArray[i] != 0x00){
                 return false;
             }
         }
@@ -76,13 +76,13 @@ export class Memory extends hardware implements ClockListener {
 
     //get total addressable Space --> array is private therefore well use this to get the length
     public totalAddressableSpace() : number {
-        return this.HexArray.length + 1;
+        return this.HexArray.length + 0x01;
     }
 
 
     public memoryDump(fromAddress: number, toAddress: number) : void {
 
-        assert(fromAddress < toAddress || fromAddress > -1);    //make sure the user gives us proper input so we dont go out of bounds
+        assert(fromAddress < toAddress && fromAddress > -1);    //make sure the user gives us proper input so we dont go out of bounds
 
         //error check, if they want an address outside of our addressable space then throw an error and return the function
         if(toAddress > this.HexArray.length){
@@ -93,17 +93,17 @@ export class Memory extends hardware implements ClockListener {
 
         //format the memory output
         this.log( "Initialized Memory ")
-        this.log("--------------------------------------");
-        //array indices (mar) get a length of 5, & array elements (mdr) get a length of 2
+        this.log("--------------------------------------\n");
+        //array indices (mar) get a length of 4, & array elements (mdr) get a length of 2
         for(let i = fromAddress; i <= toAddress; ++i){
-            this.log("Addr: " + super.hexValue(i, 4) + "  | " + (super.hexValue(this.HexArray[i], 2) + "\n")); 
+            this.log("Addr: " + super.hexValue(i, 0x04) + "  | " + (super.hexValue(this.HexArray[i], 0x02) + "\n")); 
         }
-        this.log("--------------------------------------");
-        this.log("Memory Dump Complete")
+        this.log("--------------------------------------\n");
+        this.log("Memory Dump Complete");
 
     }
      
-    public log(message: String) {
+    public log(message: String) : void {
         return super.log(message);
     }
     

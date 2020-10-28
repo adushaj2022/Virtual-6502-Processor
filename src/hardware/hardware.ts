@@ -13,7 +13,7 @@ export class hardware {
     
 
     //log statement that all devices will use
-    public log(message: String): void{
+    public log(message: String): void {
             this.time = new Date().toLocaleString();
             if (message !== null){
                 if(this.debug){
@@ -26,7 +26,7 @@ export class hardware {
     
     }
   
-    //method to turn decimal into hex, rather than typing to String and to Upper everytime
+    //method to turn decimal into hex, rather than typing toString(16) and to Upper everytime
     public toHex(decimal : number) : string {
         return decimal.toString(16).toUpperCase();
     }
