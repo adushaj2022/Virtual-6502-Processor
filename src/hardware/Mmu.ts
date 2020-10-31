@@ -25,6 +25,11 @@ export class Mmu extends hardware {
         this.ram.write();                       //set the MAR and MDR, then we can write to Memory
     }
 
+    public readIntermediate(address : number) : number {
+        this.setMDR(address);
+        return this.read();     //accepts an address and gives us the data there
+    }
+
     //Helper / Util method for CPU to access -- As CPU cannot access Memory directly. 
     public memoryDump(fromAddress: number, toAddress: number) : void {
         return this.ram.memoryDump(fromAddress, toAddress);
