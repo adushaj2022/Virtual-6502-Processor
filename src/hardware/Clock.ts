@@ -47,8 +47,8 @@ export class Clock extends hardware{
             this.list.splice(index, 1);
         }
     }
-    //method to remobe all listeners
-    public removeAllListeners(obj: ClockListener): void{
+    //method to remove all listeners
+    public removeAllListeners(): void{
         while(this.list.length > 0) {
             this.list.pop();
         }        
