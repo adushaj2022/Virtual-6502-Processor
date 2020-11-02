@@ -43,7 +43,7 @@ export class Memory extends hardware implements ClockListener {
 
     //returns the data (mdr) from a specificed address (mar)
     public read() : number {
-        return this.HexArray[this.getMDR()] = this.getMAR(); 
+        return this.HexArray[this.getMAR()]; 
     }
 
     //sets the data (mdr) from a specificed address (mar)
