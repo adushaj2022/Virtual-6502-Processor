@@ -57,35 +57,6 @@ export class System extends hardware {
         clk.log("Created");
         clk.process_pulse(CLOCK_INTERVAL); //begin the clock
 
-        //---------MMU-----------------
-        let mmu : Mmu = new Mmu(1, "MMU");
-        mmu.writeIntermediate(0x0000, 0xA9);
-        mmu.writeIntermediate(0x0001, 0x0D);
-        mmu.writeIntermediate(0x0002, 0xA9);
-        mmu.writeIntermediate(0x0003, 0x1D);
-        mmu.writeIntermediate(0x0004, 0xA9);
-        mmu.writeIntermediate(0x0005, 0x2D);
-        mmu.writeIntermediate(0x0006, 0xA9);
-        mmu.writeIntermediate(0x0007, 0x3F);
-        mmu.writeIntermediate(0x0008, 0xA9);
-        mmu.writeIntermediate(0x0009, 0xFF);
-        mmu.writeIntermediate(0x000A, 0x00);
-
-        mmu.memoryDump(0x0000, 0x000A);
-
-        //---------Temporary Test Cases--------------------------------------
-        cpu.mmu.setLowOrderByte(0x0D); //test a low and high order byte with a convert
-        cpu.mmu.setHighOrderByte(0xB9);
-       
-        console.log(this.hexValue((cpu.mmu.convert_to_li_format()), 4)); //output AB02  //we use the hex value func because leading 0s will be stripped by Ts automatically
-
-        cpu.mmu.setMAR(0x0D, 0x00);
-        console.log(this.hexValue(cpu.mmu.getMAR(), 4)); //example of setting the MAR with two parameters (Big Endian Format) -> first parameter is lob second is hob
-
-        cpu.mmu.setMAR(0xA1);
-        console.log(this.toHex(cpu.mmu.getMAR()));  //example of setting the MAR with one paramter
-
-
         return this.debug;
     }
 

@@ -26,7 +26,7 @@ export class Mmu extends hardware {
     }
 
     public readIntermediate(address : number) : number {
-        this.setMDR(address);
+        this.setMAR(address);
         return this.read();     //accepts an address and gives us the data there
     }
 
@@ -93,11 +93,11 @@ export class Mmu extends hardware {
 
     public convert_to_li_format() : number {
 
-       let a : number = this.getLowOrderByte();  //get LOB
-       let b : number = this.getHighOrderByte(); //get HOB
+       let b : number = this.getLowOrderByte();  //get LOB
+       let a : number = this.getHighOrderByte(); //get HOB
 
-       b = (b << 8);                    //shift HOB two places left
-       b += a;                          //add LOB --> final answer
+       b = (b << 8);                    //shift LOB two places left
+       b += a;                          //add HOB --> final answer
 
        return b;                        
 

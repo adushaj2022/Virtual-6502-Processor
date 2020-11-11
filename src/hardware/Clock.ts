@@ -13,7 +13,7 @@ export class Clock extends hardware{
     
     constructor(idNumber: number, name: String) {
         super(idNumber, name);
-     }
+    }
 
     public process_pulse(interval: number): void {
 
