@@ -57,6 +57,11 @@ export class System extends hardware {
         clk.log("Created");
         clk.process_pulse(CLOCK_INTERVAL); //begin the clock
 
+
+        //cpu.mmu.setLowOrderByte(0x00);
+        //cpu.mmu.setHighOrderByte(0x40);
+        //console.log(this.hexValue((cpu.mmu.convert_to_li_format()), 4));
+
         return this.debug;
     }
 

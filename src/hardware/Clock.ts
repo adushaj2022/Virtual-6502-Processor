@@ -29,7 +29,7 @@ export class Clock extends hardware{
             }
             clockCount++;
             //stop the timer after 10 pulses for illustration purposes
-            if (clockCount === 11) {
+            if (clockCount === 20) {
                 clearInterval(timer);
             }
         }, interval);
