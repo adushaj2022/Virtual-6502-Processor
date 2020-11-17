@@ -6,7 +6,7 @@ import { Memory } from "./Memory";
 
 
 export class Clock extends hardware{
-    
+
     private list: Array<ClockListener> = [
         new Cpu (0,"CPU"), new Memory (0,"RAM")
     ];
@@ -15,13 +15,13 @@ export class Clock extends hardware{
         super(idNumber, name);
     }
 
+
     public process_pulse(interval: number): void {
 
         let clockCount : number = 1;
        
-
+    
         const timer = setInterval(() => {
-           
             this.log("Clock Pulse Initialized");
             //loop through each listener and call its pulse method
             for(let j = 0; j < this.list.length; j++){
@@ -29,7 +29,7 @@ export class Clock extends hardware{
             }
             clockCount++;
             //stop the timer after 10 pulses for illustration purposes
-            if (clockCount === 20) {
+            if (clockCount === 35) {
                 clearInterval(timer);
             }
         }, interval);
