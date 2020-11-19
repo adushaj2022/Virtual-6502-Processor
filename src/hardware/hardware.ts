@@ -4,6 +4,7 @@ export class hardware {
     idNumber : number; 
     name : String;
     debug : boolean = true;
+    public static clock_switch: boolean = true;
     time;
 
     constructor(idNumber : number, name : String){
@@ -25,7 +26,15 @@ export class hardware {
             }
     
     }
-  
+    
+    public getStatus(){
+        return hardware.clock_switch;
+    }
+
+    public setStatus(bool : boolean){
+        hardware.clock_switch = bool;
+    }
+
     //method to turn decimal into hex, rather than typing toString(16) and to Upper everytime
     public toHex(decimal : number) : string {
         return decimal.toString(16).toUpperCase();

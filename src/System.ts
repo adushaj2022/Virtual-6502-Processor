@@ -3,18 +3,14 @@ import {Cpu} from "./hardware/Cpu";
 import {hardware} from "./hardware/hardware";
 import { Memory } from "./hardware/Memory";
 import { Clock } from "./hardware/Clock";
-import { Mmu } from "./hardware/Mmu";
 
 
 
-/*
-    Constants
-*/
 
 // Initialization Parameters for Hardware
 // Clock cycle interval
 
-const CLOCK_INTERVAL= 500;               // This is in ms (milliseconds) so 1000 = 1 second, 100 = 1/10 second
+const CLOCK_INTERVAL = 100;               // This is in ms (milliseconds) so 1000 = 1 second, 100 = 1/10 second
                                         // A setting of 100 is equivalent to 10hz, 1 would be 1,000hz or 1khz,
                                         // .001 would be 1,000,000 or 1mhz. Obviously you will want to keep this
                                         // small, I recommend a setting of 100, if you want to slow things down
@@ -38,11 +34,6 @@ export class System extends hardware {
         this.startSystem();
     }
 
-
-    public log(message: String){
-        return super.log(message);
-    }
-
     public startSystem(): boolean {
         //---------Memory-----------------
         let mem: Memory = new Memory(0, "RAM");
@@ -56,13 +47,16 @@ export class System extends hardware {
         let clk : Clock = new Clock(0, "Clock");
         clk.log("Created");
         clk.process_pulse(CLOCK_INTERVAL); //begin the clock
-
-
+    
         return this.debug;
     }
 
     public stopSystem(): boolean {
         return this.debug = false;
+    }
+
+    public log(message: String){
+        return super.log(message);
     }
 
 }

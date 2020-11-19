@@ -17,9 +17,6 @@ export class Clock extends hardware{
 
 
     public process_pulse(interval: number): void {
-
-        let clockCount : number = 1;
-       
     
         const timer = setInterval(() => {
             this.log("Clock Pulse Initialized");
@@ -27,9 +24,9 @@ export class Clock extends hardware{
             for(let j = 0; j < this.list.length; j++){
                 this.list[j].pulse();
             }
-            clockCount++;
-            //stop the timer after 10 pulses for illustration purposes
-            if (clockCount === 35) {
+            
+            if (this.getStatus() === false) {            //to stop the clock we will put a global BOOLEAN here , that
+                                                //the cpu will set to false
                 clearInterval(timer);
             }
         }, interval);
