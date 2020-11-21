@@ -58,7 +58,7 @@ export class Mmu extends hardware {
 
     //Helper / Util method
     public getMDR() : number {
-        return this.ram.getMAR();
+        return this.ram.getMDR();
     }
 
     //Helper / Util method

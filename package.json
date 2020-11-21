@@ -5,6 +5,7 @@
   "main": "dist/System.js",
   "dependencies": {
     "colors": "^1.4.0",
+    "javascript-priority-queue": "^1.0.0",
     "jquery": "^3.5.1",
     "node-fetch": "^2.6.1",
     "typescript": "^3.7.4"

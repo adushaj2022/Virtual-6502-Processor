@@ -4,7 +4,8 @@ import {hardware} from "./hardware/hardware";
 import { Memory } from "./hardware/Memory";
 import { Clock } from "./hardware/Clock";
 
-
+import { VirtualKeyboard } from "./hardware/VirtualKeyboard";
+import { InterruptController } from "./hardware/InterruptController";
 
 
 // Initialization Parameters for Hardware
@@ -47,7 +48,10 @@ export class System extends hardware {
         let clk : Clock = new Clock(0, "Clock");
         clk.log("Created");
         clk.process_pulse(CLOCK_INTERVAL); //begin the clock
-    
+        
+        //let ic = new InterruptController(cpu);
+        //let vkb = new VirtualKeyboard(ic);
+
         return this.debug;
     }
 

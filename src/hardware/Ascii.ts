@@ -143,30 +143,6 @@ export class Ascii {
         Ascii.Dictionary.set(0x7B, "{");
         Ascii.Dictionary.set(0x7C, "|");
         Ascii.Dictionary.set(0x7D, "}");
-        Ascii.Dictionary.set(0x7F, "~");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
+        Ascii.Dictionary.set(0x7F, "~");        
     }
 }
