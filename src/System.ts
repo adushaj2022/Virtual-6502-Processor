@@ -6,6 +6,7 @@ import { Clock } from "./hardware/Clock";
 
 import { VirtualKeyboard } from "./hardware/VirtualKeyboard";
 import { InterruptController } from "./hardware/InterruptController";
+import { Mmu } from "./hardware/Mmu";
 
 
 // Initialization Parameters for Hardware
@@ -20,8 +21,6 @@ const CLOCK_INTERVAL = 100;               // This is in ms (milliseconds) so 100
 
 export class System extends hardware {
     
-    public running: boolean = false;
-
     constructor(idNumber: number, name: String) {
 
         super(idNumber, name);
@@ -37,26 +36,32 @@ export class System extends hardware {
 
     public startSystem(): boolean {
         //---------Memory-----------------
-        let mem: Memory = new Memory(0, "RAM");
-        mem.log("Created - Addressable space : " + mem.totalAddressableSpace());
+        let mmu: Mmu = new Mmu();
+        let mem: Memory = new Memory();
 
         //---------CPU-----------------
-        let cpu: Cpu = new Cpu(0, "CPU");
+        let cpu: Cpu = new Cpu(mmu);
         cpu.log("Created");
 
-        //---------Clock-----------------
-        let clk : Clock = new Clock(0, "Clock");
+        //---------interrupt controller----------
+        let ic = new InterruptController(cpu);
+        //-----------Virtual Keyboard------------
+        let vkb = new VirtualKeyboard(ic);
+
+        //-----------Clock-----------------------
+        let clk : Clock = new Clock();
         clk.log("Created");
+        clk.addToListener(cpu);
+        clk.addToListener(mem);
+        clk.addToListener(ic);
+
         clk.process_pulse(CLOCK_INTERVAL); //begin the clock
         
-        //let ic = new InterruptController(cpu);
-        //let vkb = new VirtualKeyboard(ic);
-
-        return this.debug;
+        return true;
     }
 
     public stopSystem(): boolean {
-        return this.debug = false;
+        return false;
     }
 
     public log(message: String){

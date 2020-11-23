@@ -1,37 +1,22 @@
 
 export class hardware {
     
-    idNumber : number; 
-    name : String;
-    debug : boolean = true;
+    public idNumber : number; 
+    public name : String;
+    public debug : boolean = true;
     public static clock_switch: boolean = true;
-    time;
+    private time : string;
 
     constructor(idNumber : number, name : String){
         this.idNumber = idNumber;
         this.name = name;
     }
     
-
-    //log statement that all devices will use
-    public log(message: String): void {
-            this.time = new Date().toLocaleString();
-            if (message !== null){
-                if(this.debug){
-                    return console.log("[HW - " + this.name + " ID: " + this.idNumber + " - " + this.time +  "] : " + message);
-
-                } 
-            else { return console.log("Debugging is off for: " + this.name);}
-
-            }
-    
-    }
-    
-    public getStatus(){
+    public getStatus() : boolean {
         return hardware.clock_switch;
     }
 
-    public setStatus(bool : boolean){
+    public setStatus(bool : boolean) : void{
         hardware.clock_switch = bool;
     }
 
@@ -43,10 +28,23 @@ export class hardware {
 
     //toString(16).toUpperCase() will simply make num a hex number
     //padStart will add the necescary amount of 0s to satisfy our needed length
-    public hexValue(num: number, len: number){
+    public hexValue(num: number, len: number) : string {
         return num.toString(16).toUpperCase().padStart(len,'0');
     }
 
+        //log statement that all devices will use
+    public log(message: String): void {
+        this.time = new Date().toLocaleString();
+        if (message !== null){
+            if(this.debug){
+                return console.log("[HW - " + this.name + " ID: " + this.idNumber + " - " + this.time +  "] : " + message);
+
+            }
+            else { 
+                return console.log("Debugging is off for: " + this.name);
+            }           
+        }
+    }
 }
 
 

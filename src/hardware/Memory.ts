@@ -9,8 +9,8 @@ export class Memory extends hardware implements ClockListener {
     private mar : number = 0x0000;                      //Memory Address Reg
     private mdr : number = 0x00;                        //Memory Data Reg
 
-    constructor(idNumber: number, name: String) {
-        super(idNumber, name);
+    constructor() {
+        super(0, "RAM");
         this.fillArray();   //when Memory is created, it will be initiated to 0
     }
 
@@ -93,12 +93,12 @@ export class Memory extends hardware implements ClockListener {
 
         //format the memory output
         this.log( "Initialized Memory ")
-        this.log("--------------------------------------\n");
+        this.log("--------------------------------------");
         //array indices (mar) get a length of 4, & array elements (mdr) get a length of 2
         for(let i = fromAddress; i <= toAddress; ++i){
-            this.log("Addr: " + super.hexValue(i, 0x04) + "  | " + (super.hexValue(this.HexArray[i], 0x02) + "\n")); 
+            this.log("Addr: " + super.hexValue(i, 0x04) + "  | " + (super.hexValue(this.HexArray[i], 0x02))); 
         }
-        this.log("--------------------------------------\n");
+        this.log("--------------------------------------");
         this.log("Memory Dump Complete");
 
     }

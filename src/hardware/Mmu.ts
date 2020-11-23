@@ -5,13 +5,13 @@ import { Memory } from "./Memory";
 
 export class Mmu extends hardware {
 
-    private ram : Memory = new Memory(0, "MMU");    //create an instance of memory
+    private ram : Memory = new Memory();    //create an instance of memory
 
     private lob : number = 0x00;
     private hob : number = 0x00;
 
-    constructor(idNumber: number, name: String) {
-        super(idNumber, name);
+    constructor() {
+        super(0, "MemoryManagementUnit");
     }
 
 

@@ -4,7 +4,9 @@ import { Ascii } from "./Ascii";
 import { hardware } from "./hardware";
 import { ClockListener } from "./imp/ClockListener";
 import { Mmu } from "./Mmu";
-
+import { VirtualKeyboard } from "./VirtualKeyboard";
+import PriorityQueue from 'javascript-priority-queue';
+import { Interrupt } from "./imp/Interrupt";
 
 enum cycle {            ///enum to represent the cycles 
     c_fetch, 
@@ -17,10 +19,10 @@ enum cycle {            ///enum to represent the cycles
 
 export class Cpu extends hardware implements ClockListener {
     
-    private accumulator : number;
+    private accumulator : number = 0;
     private x_register : number = 0;
     private y_register : number = 0;
-    private insuction_register : number;
+    private insuction_register : number = 0;
     private program_counter = 0;
 
     public cpuClockCount : number = 0;
@@ -38,12 +40,19 @@ export class Cpu extends hardware implements ClockListener {
     public process_String : boolean = false;
     public executeTwo : boolean = false;
 
+    public maxHeap : PriorityQueue = new PriorityQueue("max");
+
     public zFlag : boolean = true;
 
-    public mmu : Mmu = new Mmu(0, "MMU");   //this is how we access memory; through the MMU
+    public mmu : Mmu;  //this is how we access memory; through the MMU
 
-    constructor(idNumber: number, name: String) {
-       super(idNumber, name);
+    private cpuLogSwitch: boolean = true;
+
+    private device : Interrupt;
+
+    constructor(mmu : Mmu) {
+       super(0, "CPU");
+       this.mmu = mmu;
        this.init_program();
 
        //Hashmap -- map each instruction to the amount of opcodes it has
@@ -69,28 +78,48 @@ export class Cpu extends hardware implements ClockListener {
 
 
     public init_program() : void {
-        this.mmu.writeIntermediate(0x0000, 0xA2);
-        this.mmu.writeIntermediate(0x0001, 0x02);
-        this.mmu.writeIntermediate(0x0002, 0xFF);
-        this.mmu.writeIntermediate(0x0003, 0x06);
+        this.mmu.writeIntermediate(0x0000, 0xA9);
+        this.mmu.writeIntermediate(0x0001, 0x00);
+        // write acc (0) to 0040
+        this.mmu.writeIntermediate(0x0002, 0x8D);
+        this.mmu.writeIntermediate(0x0003, 0x40);
         this.mmu.writeIntermediate(0x0004, 0x00);
-        this.mmu.writeIntermediate(0x0005, 0x00);
-        this.mmu.writeIntermediate(0x0006, 0x48);
-        this.mmu.writeIntermediate(0x0007, 0x65);
-        this.mmu.writeIntermediate(0x0008, 0x6C);
-        this.mmu.writeIntermediate(0x0009, 0x6C);
-        this.mmu.writeIntermediate(0x000A, 0x6F);
-        this.mmu.writeIntermediate(0x000B, 0x20);
-        this.mmu.writeIntermediate(0x000C, 0x57);
-        this.mmu.writeIntermediate(0x000D, 0x6F);
-        this.mmu.writeIntermediate(0x000E, 0x72);
-        this.mmu.writeIntermediate(0x000F, 0x6C);
-        this.mmu.writeIntermediate(0x0010, 0x64);
-        this.mmu.writeIntermediate(0x0011, 0x21);
-        this.mmu.writeIntermediate(0x0012, 0x0A);
-        this.mmu.writeIntermediate(0x0013, 0x00);
-        this.mmu.memoryDump(0x0000, 0x0010);
-
+        // load constant 1
+        this.mmu.writeIntermediate(0x0005, 0xA9);
+        this.mmu.writeIntermediate(0x0006, 0x01);
+        // add acc (?) to mem 0040 (?)
+        this.mmu.writeIntermediate(0x0007, 0x6D);
+        this.mmu.writeIntermediate(0x0008, 0x40);
+        this.mmu.writeIntermediate(0x0009, 0x00);
+        // write acc ? to 0040
+        this.mmu.writeIntermediate(0x000A, 0x8D);
+        this.mmu.writeIntermediate(0x000B, 0x40);
+        this.mmu.writeIntermediate(0x000C, 0x00);
+        // Load y from memory 0040
+        this.mmu.writeIntermediate(0x000D, 0xAC);
+        this.mmu.writeIntermediate(0x000E, 0x40);
+        this.mmu.writeIntermediate(0x000F, 0x00);
+        // Load x with constant (1) (to make the first system call)
+        this.mmu.writeIntermediate(0x0010, 0xA2);
+        this.mmu.writeIntermediate(0x0011, 0x01);
+        // make the system call to print the value in the y register (3)
+        this.mmu.writeIntermediate(0x0012, 0xFF);
+        // Load x with constant (2) (to make the second system call for the string)
+        this.mmu.writeIntermediate(0x0013, 0xA2);
+        this.mmu.writeIntermediate(0x0014, 0x02);
+        // make the system call to print the value in the y register (3)
+        this.mmu.writeIntermediate(0x0015, 0xFF);
+        this.mmu.writeIntermediate(0x0016, 0x50);
+        this.mmu.writeIntermediate(0x0017, 0x00);
+        // test DO (Branch Not Equal) will be NE and branch (0x0021 contains 0x20 and xReg contains B2)
+        this.mmu.writeIntermediate(0x0018, 0xD0);
+        this.mmu.writeIntermediate(0x0019, 0xED);
+        // globals
+        this.mmu.writeIntermediate(0x0050, 0x2C);
+        this.mmu.writeIntermediate(0x0052, 0x00);
+        this.mmu.memoryDump(0x0000, 0x001A);
+        this.mmu.memoryDump(0x0050, 0x0053);        
+        
     }
 
     private setInsctrutionRegister(insuction_register : number) : void {
@@ -138,7 +167,7 @@ export class Cpu extends hardware implements ClockListener {
 
 
     public fetch() : void {
-        console.log("\t\t\t\t\tPROGRAM COUNTER #"+ this.program_counter)
+        //console.log("\t\t\t\t\tPROGRAM COUNTER #"+ this.program_counter)
         let instruction = this.mmu.readIntermediate(this.program_counter++);
         this.setInsctrutionRegister(instruction);
     }
@@ -210,7 +239,6 @@ export class Cpu extends hardware implements ClockListener {
             } else if(instr === 0xEA){
                 this.doExecute = false;
             } else if(instr === 0x00) {
-                this.debug = false;     //turn off debugging, this is a halt
                 this.doExecute = false;
                 this.setStatus(false);
             } else if (instr === 0xFF) {        //process system calls, 
@@ -237,17 +265,16 @@ export class Cpu extends hardware implements ClockListener {
         let curr_instruction = this.getInstructionRegister();
 
         if(this.process_String){        //Case for a string
-            if(this.program_counter >= this.mmu.convert_to_li_format()){
-                if(this.mmu.readIntermediate(this.program_counter) === 0x00){   //make sure we are not a halt
-                    this.process_String = false;
-                    this.curr_cycle = cycle.c_fetch;
-                    return;
-                }
-                process.stdout.write(Ascii.fromCharCode(this.mmu.readIntermediate(this.program_counter)));
-            }
-            this.program_counter++;
-            return;     //return so we do not re trigger any previous conditions
+            if(this.mmu.readIntermediate(this.mmu.getMAR()) === 0x00){   //make sure we are not a halt
+                this.process_String = false;
+                this.curr_cycle = cycle.c_fetch;
+                return;
+            }                
+            process.stdout.write(Ascii.fromCharCode(this.mmu.readIntermediate(this.mmu.getMAR())));
+            this.mmu.setMAR(this.mmu.getMAR()+1);
+            return;
         }
+        
 
         if(this.executeTwo){
             if(curr_instruction == 0xEE){       //increment has a second execute
@@ -300,6 +327,7 @@ export class Cpu extends hardware implements ClockListener {
                 process.stdout.write(this.get_y_register().toString(16));
             } else {
                 this.process_String = true
+                this.mmu.setMAR(this.mmu.convert_to_li_format());
             }
         }
     }
@@ -311,10 +339,28 @@ export class Cpu extends hardware implements ClockListener {
         this.doWriteBack = false;
     }
 
-    public interrupt_check() : void {
 
+    public setInterrupt(device : Interrupt) : void {
+        this.device = device;
     }
 
+    public getInterrupt() : Interrupt {
+        return this.device;
+    }
+
+    public interrupt_check() : void {
+        if(typeof this.device != 'undefined')
+        {    
+            this.maxHeap = this.getInterrupt().input_buffer;
+            if(this.maxHeap.size() > 0) {
+                this.log("Highest Priotity Interrupt was dequeued -> " + this.maxHeap.peek());
+                this.log("CPU sees the buffer:\n{" + this.maxHeap.toString() + "}");         
+                this.maxHeap.dequeue();
+            }
+        }
+
+       
+    }
 
     public pulse() : void {
         this.program_log();
@@ -331,7 +377,7 @@ export class Cpu extends hardware implements ClockListener {
         i is essentially a switch, therefore if we finished an execute or a decode with no execute we will perform this check
         */
         if(this.i === 1 && (!this.twoStep || !this.doWriteBack)){       
-            console.log("\t\t" + colors.red("INTERRUPT"));
+            //console.log("\t\t" + colors.red("INTERRUPT"));
             this.curr_cycle = cycle.c_fetch;
             this.i = 0;
             this.interrupt_check();
@@ -343,7 +389,7 @@ export class Cpu extends hardware implements ClockListener {
         when false, then do interrupt check and complete (thats why we increment i)
         */
         if(this.process_String){
-            console.log("\t\t" + colors.yellow("EXECUTE"));
+            //console.log("\t\t" + colors.yellow("EXECUTE"));
             this.execute();
             if(!this.process_String){
                 ++this.i;   //if we finished the string now lets check for an interrupt
@@ -354,7 +400,7 @@ export class Cpu extends hardware implements ClockListener {
         if(this.j === 1){   //check to see if we just finished an execute, we will check for second execute &| write back
 
             if(this.executeTwo) {       //if we executed, but need another lets do another
-                console.log("\t\t" + colors.yellow("EXECUTE"));
+                //console.log("\t\t" + colors.yellow("EXECUTE"));
                 this.j = 1;
                 this.i = 1;
                 this.execute();
@@ -362,7 +408,7 @@ export class Cpu extends hardware implements ClockListener {
             }
 
             if (this.doWriteBack && !this.executeTwo){      //after we finish we now have writeback set to true and twoExecute to false
-                console.log("\t\t" + colors.blue("WRITEBACK")); //therefore we do the right back and reset the execute switch
+                //console.log("\t\t" + colors.blue("WRITEBACK")); //therefore we do the right back and reset the execute switch
                 this.curr_cycle = cycle.c_fetch;        //move pointer to fetch
                 this.doExecute = false;
                 this.write_back();
@@ -407,23 +453,23 @@ export class Cpu extends hardware implements ClockListener {
         //same with execute pointing to INTERRUPT CHECK (ASSUMING WE DO NOT HAVE MULTIPLE EXECUTES)
 //-------------------------------------------------------------------------------------
         if(this.curr_cycle === cycle.c_fetch){
-            console.log(colors.yellow("\t\t\t FETCH"));
+            //console.log(colors.yellow("\t\t\t FETCH"));
             this.curr_cycle = cycle.c_decode;
             this.fetch();   
         }
 
         else if(this.curr_cycle === cycle.c_decode){   
-            console.log(colors.red("\t\t\t DECODE"));
+            //console.log(colors.red("\t\t\t DECODE"));
             ++this.k;
             this.decode();
         } 
         else if(this.curr_cycle === cycle.c_execute){
-            console.log("\t\t" + colors.cyan("EXECUTE"));
+            //console.log("\t\t" + colors.cyan("EXECUTE"));
             this.curr_cycle = cycle.c_fetch;
             this.j = 1;    
             this.execute();
         } else if(this.curr_cycle === cycle.c_interruptCheck){
-            console.log("\t\t" + colors.red("INTERRUPT CHECK"));
+            //console.log("\t\t" + colors.red("INTERRUPT CHECK"));
             this.curr_cycle = cycle.c_fetch;
             this.interrupt_check();    
         }
@@ -431,31 +477,16 @@ export class Cpu extends hardware implements ClockListener {
  
     
     public program_log() : void {
-        const colors = require('colors');
+      if(this.cpuLogSwitch){
+        let pc = this.hexValue(this.program_counter, 4);
+        let ir = this.hexValue(this.getInstructionRegister(), 2);
+        let ac = this.hexValue(this.getAccumulator(), 2);
+        let xr = this.hexValue(this.get_x_register(), 2);
+        let yr = this.hexValue(this.get_y_register(), 2);
+        
+        this.log("CPU State | PC :" + pc + " IR: " + ir + " Acc: " + ac + " xReg: " + xr);
+      }
 
-        let pc = this.program_counter;
-        let ir = this.getInstructionRegister();
-        let xr = this.get_x_register();
-        let yr = this.get_y_register();
-        let a = this.getAccumulator();
-        let h = this.mmu.getHighOrderByte();
-        let l = this.mmu.getLowOrderByte();
-
-        if(this.debug){
-            console.log("----------------");
-    
-            if(typeof ir !== 'undefined'){
-                console.log("   Instruct Reg: " + colors.green(ir.toString(16)));
-            }
-
-            console.log("   X Reg: " + xr);
-            console.log("   Y Reg: " + yr);
-            console.log("   Accumulator: " + colors.green(a));
-            console.log("   low byte " + colors.green(l));
-            console.log("   high  byte " + colors.green(h));
-            console.log("    MDR: " + colors.green(this.mmu.getMDR()));
-            console.log("----------------");
-        }
     }
     public log(message: String) : void {
         return super.log(message);

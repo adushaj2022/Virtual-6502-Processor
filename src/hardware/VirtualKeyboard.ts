@@ -20,19 +20,25 @@
      import PriorityQueue from 'javascript-priority-queue';
      
      export class VirtualKeyboard extends hardware implements Interrupt {
-     
+
+        name: string;
+        irq: number;
+        priority: priority;
+        input_buffer : PriorityQueue;
+
          constructor(interruptController: InterruptController) {
              super(0, "VKB");
      
              this.isExecuting = false;
-     
+             this.name = "Keyboard";
              this.irq = -1;                                       // IRQ num is assigned by the controller
              this.priority = priority.REGULAR;
-     
+             this.input_buffer = new PriorityQueue('max');
+
              // initialize input & output buffers
-     
+             interruptController.keyboard = this;       //set the interrupt keyboard equal to this
              this.interruptController = interruptController;
-     
+            
              this.monitorKeys();
              this.log("Created");
          }
@@ -41,13 +47,6 @@
      
          // reference to the interrupt controller
          private interruptController: InterruptController;
-     
-         irq: number;
-         priority: priority;
-         name: string;
-         input_buffer : PriorityQueue = new PriorityQueue('max');
-     
-         // you need an input and output buffer 
      
          private monitorKeys() {
              /*
@@ -62,9 +61,11 @@
              // without this, we would only get streams once enter is pressed
              //stdin.setRawMode( true );
      
-             if(process.stdin.isTTY) {
+            
+            if(process.stdin.isTTY) {
                 process.stdin.setRawMode(true);
-             }
+            }
+             
              // resume stdin in the parent process (node app won't quit all by itself
              // unless an error or process.exit() happens)
              stdin.resume();

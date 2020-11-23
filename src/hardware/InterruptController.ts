@@ -1,22 +1,24 @@
-import { Cpu } from "./Cpu";
 import { hardware } from "./hardware";
 import { priority } from "./Priority";
 import { ClockListener } from "./imp/ClockListener";
 import { Interrupt } from "./imp/Interrupt";
 import { VirtualKeyboard } from "./VirtualKeyboard";
+import { Cpu } from "./Cpu";
+import PriorityQueue from 'javascript-priority-queue';
 
 
 export class InterruptController extends hardware implements ClockListener {
 
     private interruptReport : Interrupt[] = new Array<Interrupt>();
     private interruptDevices : Interrupt[] = new Array<Interrupt>();
-    private keyboard : VirtualKeyboard;
+    public keyboard : VirtualKeyboard;
+    private cpu: Cpu;
     constructor(cpu : Cpu){
-        super(0, "InterruptController");   
+        super(0, "IRC");   
+        this.cpu = cpu;
         this.interruptDevices.push(this.keyboard);
     }
 
-    private cpu : Cpu;
 
     public addDevice(interruptDevice : Interrupt) : void {
         this.interruptDevices.push(interruptDevice);
@@ -29,27 +31,16 @@ export class InterruptController extends hardware implements ClockListener {
         }
     }
 
-
-    public acceptInterrupt(keyboard : VirtualKeyboard): any {
+    public acceptInterrupt(keyboard : VirtualKeyboard) : void {
+        this.keyboard = keyboard
         this.interruptReport.push(keyboard);
-
-        this.keyboard = keyboard;
-
-
-        let maxHeap = this.keyboard.input_buffer;
-        console.log(maxHeap.toString())
-        let heapify;
-        if(maxHeap.size() > 0){
-            heapify = maxHeap.dequeue();
-        } else {
-            heapify = -1;
-        }
-    
-        return heapify;
+        this.cpu.setInterrupt(keyboard);
     }
     
     public pulse() : void {
-        let s = this.acceptInterrupt(this.keyboard);
-        //this.cpu.givePoll(s, this, input_buffer);
+        if(typeof this.keyboard !== 'undefined')
+        {
+            this.log("recieved clock pulse | Max Heap Size -> " + this.keyboard.input_buffer.size());
+        }
     }
 }

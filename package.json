@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "@types/jquery": "^3.5.4",
-    "@types/node": "^13.1.6"
+    "@types/node": "^13.13.32"
   },
   "scripts": {
     "start": "node ./dist/System.js",

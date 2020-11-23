@@ -7,17 +7,15 @@ import { Memory } from "./Memory";
 
 export class Clock extends hardware{
 
-    private list: Array<ClockListener> = [
-        new Cpu (0,"CPU"), new Memory (0,"RAM")
-    ];
+    private list: Array<ClockListener> = [];
     
-    constructor(idNumber: number, name: String) {
-        super(idNumber, name);
+    constructor() {
+        super(0, "CLK");
     }
 
 
     public process_pulse(interval: number): void {
-    
+        
         const timer = setInterval(() => {
             this.log("Clock Pulse Initialized");
             //loop through each listener and call its pulse method
