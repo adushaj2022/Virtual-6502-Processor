@@ -5,5 +5,5 @@ export interface Interrupt {
     irq : number;
     priority : priority;
     name : string;
-    input_buffer : PriorityQueue;
+    output_buffer : PriorityQueue;
 }

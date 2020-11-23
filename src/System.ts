@@ -1,12 +1,11 @@
-// import statements for hardware
-import {Cpu} from "./hardware/Cpu";
-import {hardware} from "./hardware/hardware";
-import { Memory } from "./hardware/Memory";
-import { Clock } from "./hardware/Clock";
+import { Cpu } from "./Hardware/Cpu";
+import { Hardware } from "./hardware/Hardware";
+import { Memory } from "./Hardware/Memory";
+import { Clock } from "./Hardware/Clock";
 
-import { VirtualKeyboard } from "./hardware/VirtualKeyboard";
-import { InterruptController } from "./hardware/InterruptController";
-import { Mmu } from "./hardware/Mmu";
+import { VirtualKeyboard } from "./Hardware/VirtualKeyboard";
+import { InterruptController } from "./Hardware/InterruptController";
+import { MemoryManagementUnit } from "./hardware/MemoryManagementUnit";
 
 
 // Initialization Parameters for Hardware
@@ -19,7 +18,7 @@ const CLOCK_INTERVAL = 100;               // This is in ms (milliseconds) so 100
                                         // make it larger.
 
 
-export class System extends hardware {
+export class System extends Hardware {
     
     constructor(idNumber: number, name: String) {
 
@@ -27,7 +26,7 @@ export class System extends hardware {
         
         /*
         Start the system (Analogous to pressing the power button and having voltages flow through the components)
-        When power is applied to the system clock, it begins sending pulses to all clock observing hardware
+        When power is applied to the system clock, it begins sending pulses to all clock observing Hardware
         components so they can act on each clock cycle.
          */
 
@@ -36,9 +35,9 @@ export class System extends hardware {
 
     public startSystem(): boolean {
         //---------Memory-----------------
-        let mmu: Mmu = new Mmu();
+        
         let mem: Memory = new Memory();
-
+        let mmu: MemoryManagementUnit = new MemoryManagementUnit(mem);
         //---------CPU-----------------
         let cpu: Cpu = new Cpu(mmu);
         cpu.log("Created");
@@ -62,10 +61,6 @@ export class System extends hardware {
 
     public stopSystem(): boolean {
         return false;
-    }
-
-    public log(message: String){
-        return super.log(message);
     }
 
 }

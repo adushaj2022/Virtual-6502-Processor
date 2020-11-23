@@ -1,9 +1,9 @@
-import { assert, memory } from "console";
-import { hardware } from "./hardware";
+import { assert } from "console";
+import { Hardware } from "./Hardware";
 import { ClockListener } from "./imp/ClockListener";
 
 
-export class Memory extends hardware implements ClockListener {
+export class Memory extends Hardware implements ClockListener {
 
     private HexArray : number[] = new Array(0xFFFF);    //representation of memory
     private mar : number = 0x0000;                      //Memory Address Reg
@@ -102,9 +102,5 @@ export class Memory extends hardware implements ClockListener {
         this.log("Memory Dump Complete");
 
     }
-     
-    public log(message: String) : void {
-        return super.log(message);
-    }
-    
+         
 }

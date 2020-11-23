@@ -5,7 +5,6 @@ export class Ascii {
     since we have a one to one mapping, with each ascii code having a corresponding character and
     vice versa, we will use a hashmap to decrease ambiguity. Rather than have 2 two large if else blocks
     we can create the map once, and use the functions belowe to get the key(number) or value(string) for the desired output
-
     */
 
     /*

@@ -1,5 +1,5 @@
 
-export class hardware {
+export class Hardware {
     
     public idNumber : number; 
     public name : String;
@@ -13,11 +13,11 @@ export class hardware {
     }
     
     public getStatus() : boolean {
-        return hardware.clock_switch;
+        return Hardware.clock_switch;
     }
 
     public setStatus(bool : boolean) : void{
-        hardware.clock_switch = bool;
+        Hardware.clock_switch = bool;
     }
 
     //method to turn decimal into hex, rather than typing toString(16) and to Upper everytime

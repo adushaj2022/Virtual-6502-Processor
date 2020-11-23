@@ -1,19 +1,18 @@
-import { assert } from "console";
-import { hardware } from "./hardware";
+import { Hardware } from "./Hardware";
 import { Memory } from "./Memory";
 
 
-export class Mmu extends hardware {
+export class MemoryManagementUnit extends Hardware {
 
-    private ram : Memory = new Memory();    //create an instance of memory
+    private ram : Memory;  
 
     private lob : number = 0x00;
     private hob : number = 0x00;
 
-    constructor() {
+    constructor(ram : Memory) {
         super(0, "MemoryManagementUnit");
+        this.ram = ram;
     }
-
 
     public isMemoryEmpty() : boolean {
         return this.ram.isMemoryEmpty();        //check to see if memory is empty
@@ -102,7 +101,5 @@ export class Mmu extends hardware {
        return b;                        
 
     }
-
-
 
 }
